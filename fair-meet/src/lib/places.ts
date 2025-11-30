@@ -115,6 +115,7 @@ export interface Venue {
   address?: string;
   lat: number;
   lon: number;
+  openNow?: boolean;
 }
 
 export interface VenueCounts {
@@ -248,6 +249,7 @@ export async function searchNearbyVenues(
         lat: venueLat,
         lon: venueLon,
         distance: Math.round(distance), // Store distance in meters
+        openNow: place.opening_hours?.open_now,
       };
     }) || [];
 

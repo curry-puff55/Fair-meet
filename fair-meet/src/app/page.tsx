@@ -13,6 +13,7 @@ export default function HomePage() {
   const [results, setResults] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showOnlyOpenNow, setShowOnlyOpenNow] = useState(false);
 
   // Venue type filters - all enabled by default
   const [venueFilters, setVenueFilters] = useState({
@@ -379,13 +380,18 @@ export default function HomePage() {
                 )}
 
                 {/* Venue List */}
-                {point.venues && point.venues.length > 0 && (
-                  <details className="mb-4">
-                    <summary className="cursor-pointer text-sm font-medium text-blue-600 hover:text-blue-700 mb-2">
-                      View {point.venues.length} Venues & Activities
-                    </summary>
-                    <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
-                      {point.venues.map((venue: any) => (
+                {point.venues && point.venues.length > 0 && (() => {
+                  const filteredVenues = showOnlyOpenNow
+                    ? point.venues.filter((v: any) => v.openNow === true)
+                    : point.venues;
+
+                  return filteredVenues.length > 0 ? (
+                    <details className="mb-4">
+                      <summary className="cursor-pointer text-sm font-medium text-blue-600 hover:text-blue-700 mb-2">
+                        View {filteredVenues.length} Venues & Activities {showOnlyOpenNow && '(Open Now)'}
+                      </summary>
+                      <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                        {filteredVenues.map((venue: any) => (
                         <div
                           key={venue.id}
                           className="bg-white border border-slate-200 rounded p-3"
@@ -423,10 +429,11 @@ export default function HomePage() {
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </details>
-                )}
+                        ))}
+                      </div>
+                    </details>
+                  ) : null;
+                })()}
 
                 <div className="flex gap-2">
                   <button
@@ -523,6 +530,19 @@ export default function HomePage() {
 
             {/* Venue Filters */}
             <div className="border-t border-slate-200 pt-4">
+              {/* Open Now Toggle */}
+              <div className="mb-3">
+                <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showOnlyOpenNow}
+                    onChange={(e) => setShowOnlyOpenNow(e.target.checked)}
+                    className="rounded w-4 h-4"
+                  />
+                  <span>🕐 Show only venues open now</span>
+                </label>
+              </div>
+
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
