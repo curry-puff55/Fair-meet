@@ -107,18 +107,27 @@ export default function HomePage() {
   if (results) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 py-8 px-4">
+        {/* Skip to main content link for keyboard users */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg"
+        >
+          Skip to main content
+        </a>
+
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
+          <header className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
               Your Fair Meeting Points
             </h1>
             <p className="text-slate-600">
               Based on journey times via Tube & Elizabeth Line
             </p>
-          </div>
+          </header>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            <div className="bg-white rounded-lg shadow p-4">
+          <section aria-labelledby="locations-heading" className="grid md:grid-cols-2 gap-4 mb-8">
+            <h2 id="locations-heading" className="sr-only">Starting Locations</h2>
+            <div className="bg-white rounded-lg shadow p-4" role="region" aria-label="Person A's location">
               <p className="text-sm text-slate-600 mb-1">Location A</p>
               <p className="font-semibold text-slate-900">
                 {results.locationA?.input}
@@ -127,7 +136,7 @@ export default function HomePage() {
                 Nearest: {results.locationA?.nearestStation?.name}
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-4" role="region" aria-label="Person B's location">
               <p className="text-sm text-slate-600 mb-1">Location B</p>
               <p className="font-semibold text-slate-900">
                 {results.locationB?.input}
@@ -136,18 +145,20 @@ export default function HomePage() {
                 Nearest: {results.locationB?.nearestStation?.name}
               </p>
             </div>
-          </div>
+          </section>
 
-          <div className="space-y-4 mb-6">
+          <main id="main-content" className="space-y-4 mb-6">
+            <h2 className="sr-only">Recommended Meeting Points</h2>
             {results.recommendations?.map((point: any, index: number) => (
-              <div
+              <article
                 key={index}
                 className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                aria-label={`Recommendation ${index + 1}: ${point.stationName}, fairness score ${Math.round(point.fairnessScore)} out of 100`}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-blue-600">
+                      <span className="text-2xl font-bold text-blue-600" aria-hidden="true">
                         #{index + 1}
                       </span>
                       <h3 className="text-xl font-bold text-slate-900">
@@ -158,7 +169,7 @@ export default function HomePage() {
                       <span className="text-sm font-medium text-slate-600">
                         Fairness Score:
                       </span>
-                      <span className="text-lg font-bold text-green-600">
+                      <span className="text-lg font-bold text-green-600" aria-label={`Fairness score ${Math.round(point.fairnessScore)} out of 100`}>
                         {Math.round(point.fairnessScore)}/100
                       </span>
                     </div>
@@ -439,25 +450,33 @@ export default function HomePage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleCopyDetails(point, index)}
-                    className="flex-1 bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+                    className="flex-1 bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                    aria-label={`Copy details for ${point.stationName} to clipboard`}
                   >
-                    {copiedIndex === index ? '✓ Copied!' : '📋 Copy Details'}
+                    <span aria-hidden="true">{copiedIndex === index ? '✓' : '📋'}</span>
+                    {' '}
+                    {copiedIndex === index ? 'Copied!' : 'Copy Details'}
                   </button>
                   <a
                     href={`https://www.google.com/maps/search/${encodeURIComponent(point.stationName)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label={`Get directions to ${point.stationName} (opens in new window)`}
                   >
-                    🗺️ Directions
+                    <span aria-hidden="true">🗺️</span> Directions
                   </a>
                 </div>
-              </div>
+              </article>
             ))}
-          </div>
+          </main>
 
           {(!results.recommendations || results.recommendations.length === 0) && (
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center mb-6">
+            <div
+              className="bg-white rounded-lg shadow-lg p-6 text-center mb-6"
+              role="status"
+              aria-live="polite"
+            >
               <p className="text-slate-600">
                 No suitable meeting points found. Try different locations.
               </p>
@@ -470,7 +489,8 @@ export default function HomePage() {
               setLocationA("");
               setLocationB("");
             }}
-            className="w-full bg-slate-600 text-white py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors"
+            className="w-full bg-slate-600 text-white py-3 px-4 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+            aria-label="Start a new search"
           >
             Start New Search
           </button>
@@ -481,18 +501,26 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center px-4 py-8">
+      {/* Skip to main content link for keyboard users */}
+      <a
+        href="#main-form"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg"
+      >
+        Skip to search form
+      </a>
+
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
+        <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-2">
             Fair-Meet
           </h1>
           <p className="text-lg text-slate-600">
             Find the fairest place to meet in London
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <form onSubmit={handleCalculate} className="space-y-4">
+        <main id="main-form" className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <form onSubmit={handleCalculate} className="space-y-4" aria-label="Meeting point search form">
             <div>
               <label
                 htmlFor="locationA"
@@ -560,25 +588,29 @@ export default function HomePage() {
                     type="checkbox"
                     checked={showOnlyOpenNow}
                     onChange={(e) => setShowOnlyOpenNow(e.target.checked)}
-                    className="rounded w-4 h-4"
+                    className="rounded w-4 h-4 focus:ring-2 focus:ring-blue-500"
+                    aria-label="Show only venues that are currently open"
                   />
-                  <span>🕐 Show only venues open now</span>
+                  <span><span aria-hidden="true">🕐</span> Show only venues open now</span>
                 </label>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
-                className="w-full flex items-center justify-between text-sm font-medium text-slate-700 hover:text-slate-900"
+                className="w-full flex items-center justify-between text-sm font-medium text-slate-700 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded p-2"
+                aria-expanded={showFilters}
+                aria-controls="venue-filters"
+                aria-label={showFilters ? "Hide venue type filters" : "Show venue type filters"}
               >
                 <span>Filter venue types</span>
-                <span className="text-slate-400">
+                <span className="text-slate-400" aria-hidden="true">
                   {showFilters ? "▼" : "▶"}
                 </span>
               </button>
 
               {showFilters && (
-                <div className="mt-4 space-y-4">
+                <div id="venue-filters" className="mt-4 space-y-4" role="group" aria-label="Venue type filters">
                   {/* Food & Drink */}
                   <div>
                     <h3 className="text-xs font-semibold text-slate-600 mb-2">
@@ -1010,7 +1042,8 @@ export default function HomePage() {
                           eventVenues: true,
                         })
                       }
-                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded"
+                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      aria-label="Select all venue types"
                     >
                       Select All
                     </button>
@@ -1050,7 +1083,8 @@ export default function HomePage() {
                           eventVenues: false,
                         })
                       }
-                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded"
+                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      aria-label="Clear all venue type selections"
                     >
                       Clear All
                     </button>
@@ -1060,7 +1094,11 @@ export default function HomePage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div
+                className="bg-red-50 border border-red-200 rounded-lg p-3"
+                role="alert"
+                aria-live="assertive"
+              >
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
@@ -1069,11 +1107,14 @@ export default function HomePage() {
               type="submit"
               disabled={isLoading}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              aria-label={isLoading ? "Calculating meeting points, please wait" : "Find fair meeting points"}
             >
-              {isLoading ? "Calculating..." : "Find Fair Meeting Points"}
+              <span aria-live="polite" aria-atomic="true">
+                {isLoading ? "Calculating..." : "Find Fair Meeting Points"}
+              </span>
             </button>
           </form>
-        </div>
+        </main>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
