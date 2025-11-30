@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getWalkingTime } from "@/lib/places";
 
 export default function HomePage() {
   const router = useRouter();
@@ -408,6 +409,11 @@ export default function HomePage() {
                                 {venue.rating && (
                                   <span className="text-xs text-slate-600">
                                     ⭐ {venue.rating}
+                                  </span>
+                                )}
+                                {venue.distance && (
+                                  <span className="text-xs text-slate-600 font-medium">
+                                    🚶 {getWalkingTime(venue.distance)} min walk ({Math.round(venue.distance)}m)
                                   </span>
                                 )}
                                 <span className="text-xs text-slate-500 capitalize">
