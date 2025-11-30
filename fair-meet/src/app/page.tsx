@@ -14,6 +14,7 @@ export default function HomePage() {
   const [showFilters, setShowFilters] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showOnlyOpenNow, setShowOnlyOpenNow] = useState(false);
+  const [timeOfDay, setTimeOfDay] = useState<'now' | 'lunchtime' | 'evening' | 'weekend'>('now');
 
   // Venue type filters - all enabled by default
   const [venueFilters, setVenueFilters] = useState({
@@ -526,6 +527,28 @@ export default function HomePage() {
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
               />
+            </div>
+
+            {/* Time of Day Selector */}
+            <div>
+              <label
+                htmlFor="timeOfDay"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
+                When are you meeting?
+              </label>
+              <select
+                id="timeOfDay"
+                value={timeOfDay}
+                onChange={(e) => setTimeOfDay(e.target.value as any)}
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                disabled={isLoading}
+              >
+                <option value="now">Now</option>
+                <option value="lunchtime">Lunchtime (11am-2pm)</option>
+                <option value="evening">Evening (6pm-10pm)</option>
+                <option value="weekend">Weekend</option>
+              </select>
             </div>
 
             {/* Venue Filters */}
