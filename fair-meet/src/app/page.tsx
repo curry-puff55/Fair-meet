@@ -11,6 +11,7 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [results, setResults] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   // Venue type filters - all enabled by default
   const [venueFilters, setVenueFilters] = useState({
@@ -85,6 +86,18 @@ export default function HomePage() {
       setError(err.message || "Failed to calculate meeting points. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCopyDetails = async (point: any, index: number) => {
+    const text = `Meet at ${point.stationName} - Person A: ${point.timeFromA} min, Person B: ${point.timeFromB} min, Fairness: ${Math.round(point.fairnessScore)}/100`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -409,14 +422,22 @@ export default function HomePage() {
                   </details>
                 )}
 
-                <a
-                  href={`https://www.google.com/maps/search/${encodeURIComponent(point.stationName)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Get Directions
-                </a>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleCopyDetails(point, index)}
+                    className="flex-1 bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+                  >
+                    {copiedIndex === index ? '✓ Copied!' : '📋 Copy Details'}
+                  </button>
+                  <a
+                    href={`https://www.google.com/maps/search/${encodeURIComponent(point.stationName)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    🗺️ Directions
+                  </a>
+                </div>
               </div>
             ))}
           </div>
