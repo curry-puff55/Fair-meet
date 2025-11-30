@@ -3,6 +3,46 @@
  * Documentation: https://developers.google.com/maps/documentation/places
  */
 
+// In-memory cache for venue searches
+interface CacheEntry {
+  data: Venue[];
+  timestamp: number;
+}
+
+const venueCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+/**
+ * Generate cache key for venue search
+ * Rounds coordinates to 3 decimals (~111m precision) to group nearby searches
+ */
+function getCacheKey(lat: number, lon: number, type: string): string {
+  return `${lat.toFixed(3)}:${lon.toFixed(3)}:${type}`;
+}
+
+/**
+ * Clean up expired cache entries
+ */
+function cleanupCache(): void {
+  const now = Date.now();
+  const expiredKeys: string[] = [];
+
+  venueCache.forEach((entry, key) => {
+    if (now - entry.timestamp > CACHE_TTL) {
+      expiredKeys.push(key);
+    }
+  });
+
+  expiredKeys.forEach(key => venueCache.delete(key));
+
+  if (expiredKeys.length > 0) {
+    console.log(`[Cache] Cleaned up ${expiredKeys.length} expired entries`);
+  }
+}
+
+// Run cleanup every hour
+setInterval(cleanupCache, 60 * 60 * 1000);
+
 export type VenueType =
   | 'cafe'
   | 'restaurant'
@@ -117,6 +157,7 @@ export interface VenueFilters {
 
 /**
  * Search for venues near a location using Google Places API
+ * Uses in-memory cache with 24-hour TTL to reduce API calls
  */
 export async function searchNearbyVenues(
   lat: number,
@@ -130,10 +171,20 @@ export async function searchNearbyVenues(
     return [];
   }
 
+  // Check cache first
+  const cacheKey = getCacheKey(lat, lon, type);
+  const cached = venueCache.get(cacheKey);
+  const now = Date.now();
+
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    console.log(`[Cache HIT] ${type} venues near ${lat.toFixed(3)}, ${lon.toFixed(3)}`);
+    return cached.data;
+  }
+
   try {
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${radius}&type=${type}&key=${apiKey}`;
 
-    console.log(`Fetching ${type} venues near ${lat}, ${lon}`);
+    console.log(`[Cache MISS] Fetching ${type} venues near ${lat}, ${lon}`);
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -152,7 +203,7 @@ export async function searchNearbyVenues(
       ? 'food'
       : 'activity';
 
-    return data.results?.slice(0, 10).map((place: any) => ({
+    const venues = data.results?.slice(0, 10).map((place: any) => ({
       id: place.place_id,
       name: place.name,
       type: type,
@@ -163,6 +214,16 @@ export async function searchNearbyVenues(
       lat: place.geometry.location.lat,
       lon: place.geometry.location.lng,
     })) || [];
+
+    // Store in cache
+    venueCache.set(cacheKey, {
+      data: venues,
+      timestamp: now,
+    });
+
+    console.log(`[Cache] Stored ${venues.length} ${type} venues (cache size: ${venueCache.size})`);
+
+    return venues;
   } catch (error) {
     console.error('Error searching venues:', error);
     return [];
