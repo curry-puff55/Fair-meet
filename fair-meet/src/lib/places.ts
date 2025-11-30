@@ -14,10 +14,11 @@ const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 /**
  * Generate cache key for venue search
- * Rounds coordinates to 3 decimals (~111m precision) to group nearby searches
+ * Rounds coordinates to 2 decimals (~1km precision) to group nearby searches
+ * This means venues within ~1km will share the same cache entry
  */
 function getCacheKey(lat: number, lon: number, type: string): string {
-  return `${lat.toFixed(3)}:${lon.toFixed(3)}:${type}`;
+  return `${lat.toFixed(2)}:${lon.toFixed(2)}:${type}`;
 }
 
 /**
