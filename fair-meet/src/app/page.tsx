@@ -10,6 +10,41 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState<any>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Venue type filters - all enabled by default
+  const [venueFilters, setVenueFilters] = useState({
+    cafes: true,
+    restaurants: true,
+    bars: true,
+    nightClubs: true,
+    movieTheaters: true,
+    bowlingAlleys: true,
+    museums: true,
+    artGalleries: true,
+    parks: true,
+    shoppingMalls: true,
+    casinos: true,
+    stadiums: true,
+    gyms: true,
+    amusementParks: true,
+    aquariums: true,
+    zoos: true,
+    libraries: true,
+    touristAttractions: true,
+    performingArtsTheaters: true,
+    operaHouses: true,
+    concertHalls: true,
+    philharmonicHalls: true,
+    auditoriums: true,
+    comedyClubs: true,
+    danceHalls: true,
+    amphitheatres: true,
+    culturalCenters: true,
+    culturalLandmarks: true,
+    artStudios: true,
+    eventVenues: true,
+  });
 
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +67,9 @@ export default function HomePage() {
         body: JSON.stringify({
           locationA: locationA,
           locationB: locationB,
-          includeVenues: false,
+          includeVenues: true,
+          includeActivities: true,
+          venueFilters: venueFilters,
         }),
       });
 
@@ -136,6 +173,242 @@ export default function HomePage() {
                   </span>
                 </div>
 
+                {/* Venue Counts */}
+                {point.venueCounts && (
+                  <div className="bg-slate-50 rounded-lg p-4 mb-4">
+                    <h4 className="text-sm font-semibold text-slate-700 mb-2">
+                      Nearby Venues (within 400m)
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      {point.venueCounts.cafes > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>☕</span>
+                          <span>{point.venueCounts.cafes} Cafes</span>
+                        </div>
+                      )}
+                      {point.venueCounts.restaurants > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🍽️</span>
+                          <span>{point.venueCounts.restaurants} Restaurants</span>
+                        </div>
+                      )}
+                      {point.venueCounts.bars > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🍺</span>
+                          <span>{point.venueCounts.bars} Bars</span>
+                        </div>
+                      )}
+                      {point.venueCounts.nightClubs > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎉</span>
+                          <span>{point.venueCounts.nightClubs} Night Clubs</span>
+                        </div>
+                      )}
+                      {point.venueCounts.movieTheaters > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎬</span>
+                          <span>{point.venueCounts.movieTheaters} Cinemas</span>
+                        </div>
+                      )}
+                      {point.venueCounts.bowlingAlleys > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎳</span>
+                          <span>{point.venueCounts.bowlingAlleys} Bowling</span>
+                        </div>
+                      )}
+                      {point.venueCounts.museums > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🏛️</span>
+                          <span>{point.venueCounts.museums} Museums</span>
+                        </div>
+                      )}
+                      {point.venueCounts.artGalleries > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎨</span>
+                          <span>{point.venueCounts.artGalleries} Art Galleries</span>
+                        </div>
+                      )}
+                      {point.venueCounts.parks > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🌳</span>
+                          <span>{point.venueCounts.parks} Parks</span>
+                        </div>
+                      )}
+                      {point.venueCounts.shoppingMalls > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🛍️</span>
+                          <span>{point.venueCounts.shoppingMalls} Shopping</span>
+                        </div>
+                      )}
+                      {point.venueCounts.stadiums > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🏟️</span>
+                          <span>{point.venueCounts.stadiums} Stadiums</span>
+                        </div>
+                      )}
+                      {point.venueCounts.gyms > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>💪</span>
+                          <span>{point.venueCounts.gyms} Gyms</span>
+                        </div>
+                      )}
+                      {point.venueCounts.amusementParks > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎡</span>
+                          <span>{point.venueCounts.amusementParks} Amusement Parks</span>
+                        </div>
+                      )}
+                      {point.venueCounts.aquariums > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🐠</span>
+                          <span>{point.venueCounts.aquariums} Aquariums</span>
+                        </div>
+                      )}
+                      {point.venueCounts.zoos > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🦁</span>
+                          <span>{point.venueCounts.zoos} Zoos</span>
+                        </div>
+                      )}
+                      {point.venueCounts.libraries > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>📚</span>
+                          <span>{point.venueCounts.libraries} Libraries</span>
+                        </div>
+                      )}
+                      {point.venueCounts.touristAttractions > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🗼</span>
+                          <span>{point.venueCounts.touristAttractions} Attractions</span>
+                        </div>
+                      )}
+                      {point.venueCounts.casinos > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎰</span>
+                          <span>{point.venueCounts.casinos} Casinos</span>
+                        </div>
+                      )}
+                      {point.venueCounts.performingArtsTheaters > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎭</span>
+                          <span>{point.venueCounts.performingArtsTheaters} Theaters</span>
+                        </div>
+                      )}
+                      {point.venueCounts.operaHouses > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎵</span>
+                          <span>{point.venueCounts.operaHouses} Opera Houses</span>
+                        </div>
+                      )}
+                      {point.venueCounts.concertHalls > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎼</span>
+                          <span>{point.venueCounts.concertHalls} Concert Halls</span>
+                        </div>
+                      )}
+                      {point.venueCounts.philharmonicHalls > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎻</span>
+                          <span>{point.venueCounts.philharmonicHalls} Philharmonic Halls</span>
+                        </div>
+                      )}
+                      {point.venueCounts.auditoriums > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎤</span>
+                          <span>{point.venueCounts.auditoriums} Auditoriums</span>
+                        </div>
+                      )}
+                      {point.venueCounts.comedyClubs > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>😂</span>
+                          <span>{point.venueCounts.comedyClubs} Comedy Clubs</span>
+                        </div>
+                      )}
+                      {point.venueCounts.danceHalls > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>💃</span>
+                          <span>{point.venueCounts.danceHalls} Dance Halls</span>
+                        </div>
+                      )}
+                      {point.venueCounts.amphitheatres > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🏟️</span>
+                          <span>{point.venueCounts.amphitheatres} Amphitheatres</span>
+                        </div>
+                      )}
+                      {point.venueCounts.culturalCenters > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🏛️</span>
+                          <span>{point.venueCounts.culturalCenters} Cultural Centers</span>
+                        </div>
+                      )}
+                      {point.venueCounts.culturalLandmarks > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>📍</span>
+                          <span>{point.venueCounts.culturalLandmarks} Landmarks</span>
+                        </div>
+                      )}
+                      {point.venueCounts.artStudios > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎨</span>
+                          <span>{point.venueCounts.artStudios} Art Studios</span>
+                        </div>
+                      )}
+                      {point.venueCounts.eventVenues > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span>🎪</span>
+                          <span>{point.venueCounts.eventVenues} Event Venues</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Venue List */}
+                {point.venues && point.venues.length > 0 && (
+                  <details className="mb-4">
+                    <summary className="cursor-pointer text-sm font-medium text-blue-600 hover:text-blue-700 mb-2">
+                      View {point.venues.length} Venues & Activities
+                    </summary>
+                    <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                      {point.venues.map((venue: any) => (
+                        <div
+                          key={venue.id}
+                          className="bg-white border border-slate-200 rounded p-3"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">
+                                  {venue.category === 'food' ? '🍴' : '🎯'}
+                                </span>
+                                <h5 className="font-medium text-slate-900">
+                                  {venue.name}
+                                </h5>
+                              </div>
+                              {venue.address && (
+                                <p className="text-xs text-slate-500 mt-1">
+                                  {venue.address}
+                                </p>
+                              )}
+                              <div className="flex items-center gap-3 mt-1">
+                                {venue.rating && (
+                                  <span className="text-xs text-slate-600">
+                                    ⭐ {venue.rating}
+                                  </span>
+                                )}
+                                <span className="text-xs text-slate-500 capitalize">
+                                  {venue.type.replace('_', ' ')}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+
                 <a
                   href={`https://www.google.com/maps/search/${encodeURIComponent(point.stationName)}`}
                   target="_blank"
@@ -219,6 +492,501 @@ export default function HomePage() {
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
               />
+            </div>
+
+            {/* Venue Filters */}
+            <div className="border-t border-slate-200 pt-4">
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full flex items-center justify-between text-sm font-medium text-slate-700 hover:text-slate-900"
+              >
+                <span>Filter venue types</span>
+                <span className="text-slate-400">
+                  {showFilters ? "▼" : "▶"}
+                </span>
+              </button>
+
+              {showFilters && (
+                <div className="mt-4 space-y-4">
+                  {/* Food & Drink */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Food & Drink
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.cafes}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, cafes: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        ☕ Cafes
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.restaurants}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, restaurants: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🍽️ Restaurants
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.bars}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, bars: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🍺 Bars
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.nightClubs}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, nightClubs: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎉 Night Clubs
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Entertainment */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Entertainment
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.movieTheaters}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, movieTheaters: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎬 Cinemas
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.bowlingAlleys}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, bowlingAlleys: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎳 Bowling
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.casinos}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, casinos: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎰 Casinos
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.amusementParks}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, amusementParks: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎡 Amusement Parks
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Sports & Fitness */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Sports & Fitness
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.gyms}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, gyms: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        💪 Gyms
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.stadiums}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, stadiums: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🏟️ Stadiums
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Culture */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Culture
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.museums}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, museums: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🏛️ Museums
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.artGalleries}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, artGalleries: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎨 Art Galleries
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.libraries}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, libraries: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        📚 Libraries
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.culturalCenters}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, culturalCenters: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🏛️ Cultural Centers
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.culturalLandmarks}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, culturalLandmarks: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        📍 Landmarks
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.artStudios}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, artStudios: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎨 Art Studios
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Performing Arts */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Performing Arts
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.performingArtsTheaters}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, performingArtsTheaters: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎭 Theaters
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.operaHouses}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, operaHouses: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎵 Opera Houses
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.concertHalls}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, concertHalls: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎼 Concert Halls
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.philharmonicHalls}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, philharmonicHalls: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎻 Philharmonic Halls
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.auditoriums}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, auditoriums: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎤 Auditoriums
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.comedyClubs}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, comedyClubs: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        😂 Comedy Clubs
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.danceHalls}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, danceHalls: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        💃 Dance Halls
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.amphitheatres}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, amphitheatres: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🏟️ Amphitheatres
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.eventVenues}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, eventVenues: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🎪 Event Venues
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Outdoor */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Outdoor
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.parks}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, parks: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🌳 Parks
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.zoos}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, zoos: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🦁 Zoos
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.aquariums}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, aquariums: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🐠 Aquariums
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Other */}
+                  <div>
+                    <h3 className="text-xs font-semibold text-slate-600 mb-2">
+                      Other
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.shoppingMalls}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, shoppingMalls: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🛍️ Shopping
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={venueFilters.touristAttractions}
+                          onChange={(e) =>
+                            setVenueFilters({ ...venueFilters, touristAttractions: e.target.checked })
+                          }
+                          className="rounded"
+                        />
+                        🗼 Attractions
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="flex gap-2 pt-2 border-t border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setVenueFilters({
+                          cafes: true,
+                          restaurants: true,
+                          bars: true,
+                          nightClubs: true,
+                          movieTheaters: true,
+                          bowlingAlleys: true,
+                          museums: true,
+                          artGalleries: true,
+                          parks: true,
+                          shoppingMalls: true,
+                          casinos: true,
+                          stadiums: true,
+                          gyms: true,
+                          amusementParks: true,
+                          aquariums: true,
+                          zoos: true,
+                          libraries: true,
+                          touristAttractions: true,
+                          performingArtsTheaters: true,
+                          operaHouses: true,
+                          concertHalls: true,
+                          philharmonicHalls: true,
+                          auditoriums: true,
+                          comedyClubs: true,
+                          danceHalls: true,
+                          amphitheatres: true,
+                          culturalCenters: true,
+                          culturalLandmarks: true,
+                          artStudios: true,
+                          eventVenues: true,
+                        })
+                      }
+                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setVenueFilters({
+                          cafes: false,
+                          restaurants: false,
+                          bars: false,
+                          nightClubs: false,
+                          movieTheaters: false,
+                          bowlingAlleys: false,
+                          museums: false,
+                          artGalleries: false,
+                          parks: false,
+                          shoppingMalls: false,
+                          casinos: false,
+                          stadiums: false,
+                          gyms: false,
+                          amusementParks: false,
+                          aquariums: false,
+                          zoos: false,
+                          libraries: false,
+                          touristAttractions: false,
+                          performingArtsTheaters: false,
+                          operaHouses: false,
+                          concertHalls: false,
+                          philharmonicHalls: false,
+                          auditoriums: false,
+                          comedyClubs: false,
+                          danceHalls: false,
+                          amphitheatres: false,
+                          culturalCenters: false,
+                          culturalLandmarks: false,
+                          artStudios: false,
+                          eventVenues: false,
+                        })
+                      }
+                      className="flex-1 text-xs py-1 px-2 bg-slate-100 hover:bg-slate-200 rounded"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {error && (

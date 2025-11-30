@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { geocodeLocation } from '@/lib/geocode';
 import { findNearestStation, getAllStations, getJourneyTime } from '@/lib/tfl';
-import { getVenueCounts, calculateVenueScore } from '@/lib/places';
+import { getVenueCounts, getAllVenues, calculateVenueScore, VenueFilters } from '@/lib/places';
 import {
   calculateFairnessScore,
   calculateFinalScore,
@@ -15,7 +15,13 @@ import {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { locationA, locationB, includeVenues = true } = await request.json();
+    const {
+      locationA,
+      locationB,
+      includeVenues = true,
+      includeActivities = true,
+      venueFilters
+    } = await request.json();
 
     if (!locationA || !locationB) {
       return NextResponse.json(
@@ -127,16 +133,34 @@ export async function POST(request: NextRequest) {
 
     console.log('Found', meetingPoints.length, 'valid meeting points');
 
-    // Step 5: Get top 3 by fairness
-    let topPoints = getTopMeetingPoints(meetingPoints, 3, false);
+    // Step 5: Deduplicate stations by name (keep highest scoring version)
+    const uniqueStations = new Map<string, MeetingPoint>();
+    for (const point of meetingPoints) {
+      const existing = uniqueStations.get(point.stationName);
+      if (!existing || point.fairnessScore > existing.fairnessScore) {
+        uniqueStations.set(point.stationName, point);
+      }
+    }
+    const deduplicatedPoints = Array.from(uniqueStations.values());
+    console.log('After deduplication:', deduplicatedPoints.length, 'unique stations');
 
-    // Step 6: Add venue data if requested
+    // Step 6: Get top 3 by fairness
+    let topPoints = getTopMeetingPoints(deduplicatedPoints, 3, false);
+
+    // Step 7: Add venue data if requested
     if (includeVenues) {
       for (const point of topPoints) {
-        const venueCounts = await getVenueCounts(point.lat, point.lon);
+        const venueCounts = await getVenueCounts(point.lat, point.lon, 400, venueFilters);
         const venueScore = calculateVenueScore(venueCounts);
+
+        // Get full venue list if activities are requested
+        const venues = includeActivities
+          ? await getAllVenues(point.lat, point.lon, 400, venueFilters)
+          : [];
+
         point.venueCounts = venueCounts;
         point.venueScore = venueScore;
+        point.venues = venues;
         point.finalScore = calculateFinalScore(point.fairnessScore, venueScore);
       }
 

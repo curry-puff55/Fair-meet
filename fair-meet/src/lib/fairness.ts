@@ -3,7 +3,7 @@
  * Calculates the fairness score for meeting points based on journey times
  */
 
-import { VenueCounts, calculateVenueScore } from './places';
+import { VenueCounts, Venue, calculateVenueScore } from './places';
 
 export interface MeetingPoint {
   stationId: string;
@@ -17,6 +17,7 @@ export interface MeetingPoint {
   fairnessScore: number; // 0-100
   venueScore?: number;
   venueCounts?: VenueCounts;
+  venues?: Venue[]; // Full list of venues
   finalScore?: number;
 }
 
